@@ -5,8 +5,11 @@ const main = () => {
     const vertices = [
         -0.5, -0.5, //Titik A
         0.5, -0.5,  //Titik B
-        0.5, 0.5
-    ];  //Titik C
+        0.5, -0.5,  //Titik B
+        0.5, 0.5, //Titik C
+        0.5, 0.5, //Titik C
+        -0.5, -0.5, //Titik A
+    ];  
 
     const vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -60,8 +63,8 @@ const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer]) => {
     gl.clearColor(0.0,0.0,0.0,1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     
-    const primitive = gl.POINTS;
+    const primitive = gl.LINES;
     const offset = 0;
-    const nVertex = 3;
+    const nVertex = 6;
     gl.drawArrays(primitive, offset, nVertex);
 }
