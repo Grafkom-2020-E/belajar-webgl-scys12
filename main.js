@@ -72,5 +72,9 @@ const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer], canva
     const primitive = gl.TRIANGLES;
     const offset = 0;
     const nVertex = 6;
+
+    const uD = gl.getUniformLocation(shaderProgram, "u_d");
+    const d = [0.5, 0.5];
+    gl.uniform2fv(uD, d);
     gl.drawArrays(primitive, offset, nVertex);
 }
