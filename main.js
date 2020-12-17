@@ -3,8 +3,8 @@ const main = () => {
     const gl = canvas.getContext('webgl');
 
     const vertices = [
-        -0.5, -0.5, //Titik A
-        0.5, -0.5,  //Titik B
+        0.5, -0.5, //Titik A
+        -0.5, -0.5,  //Titik B
         0.5, 0.5, //Titik C
         -0.5, 0.5,
     ];  
@@ -26,7 +26,7 @@ const main = () => {
     gl.attachShader(shaderProgram, vertexShader);
     gl.attachShader(shaderProgram, fragmentShader);
 
-    startDrawingUsingShaderProgram(gl, [shaderProgram, vertexBuffer]);
+    startDrawingUsingShaderProgram(gl, [shaderProgram, vertexBuffer], canvas);
 }
 
 const createVertexAndFragmentSource = () =>{
@@ -45,7 +45,7 @@ const createVertexAndFragmentShader = (gl, vertexShaderSource, fragmentShaderSou
     return [vertexShader, fragmentShader];
 }
 
-const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer]) => {
+const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer], canvas) => {
     //connect .o so we can runnable context in .exe file before
     gl.linkProgram(shaderProgram);
 
@@ -60,8 +60,9 @@ const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer]) => {
 
     gl.clearColor(0.0,0.0,0.0,1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.viewport(100, 0, canvas.height, canvas.height);
     
-    const primitive = gl.TRIANGLE_FAN;
+    const primitive = gl.TRIANGLE_STRIP;
     const offset = 0;
     const nVertex = 4;
     gl.drawArrays(primitive, offset, nVertex);
