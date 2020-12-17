@@ -73,10 +73,28 @@ const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer], canva
 
     const uD = gl.getUniformLocation(shaderProgram, "u_d");
     const d = [0.5, 0.5];
-
+    let freeze = false;
+    const mouseClicked = (e) => {
+        freeze = !freeze;
+    }
+    
+    const onKeyDown = (e) => {
+        freeze = true;    
+    }
+    
+    const onKeyUp = (e) => {
+        freeze = false;    
+    }
+    document.addEventListener('click', mouseClicked);
+    document.addEventListener('keyup', onKeyUp);
+    document.addEventListener('keydown', onKeyDown);
     const render = () => {
-        d[0] -= 0.001;
-        d[1] -= 0.001;
+        if (freeze) {
+
+        } else {
+            d[0] -= 0.001;
+            d[1] -= 0.001;
+        }
         gl.uniform2fv(uD, d);
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
