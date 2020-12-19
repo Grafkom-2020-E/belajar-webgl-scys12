@@ -3,7 +3,7 @@ const main = () => {
     const gl = canvas.getContext('webgl');
 
     const vertices = [];  
-    var cubePoints = [
+    const cubePoints = [
         [-0.5,  0.5,  0.5],   // A, 0
         [-0.5, -0.5,  0.5],   // B, 1
    	    [ 0.5, -0.5,  0.5],   // C, 2 
@@ -14,36 +14,56 @@ const main = () => {
         [ 0.5,  0.5, -0.5]    // H, 7 
     ];
 
-    var cubeColors = [
+    const cubeColors = [
         [],
         [1.0, 0.0, 0.0],    // merah
-        [0.0, 1.0, 0.0],    // hijau
-        [0.0, 0.0, 1.0],    // biru
-        [1.0, 1.0, 1.0],    // putih
-        [1.0, 0.5, 0.0],    // oranye
-        [1.0, 1.0, 0.0],    // kuning
+        [1.0, 0.0, 0.0],    // merah
+        [1.0, 0.0, 0.0],    // merah
+        [1.0, 0.0, 0.0],    // merah
+        [1.0, 0.0, 0.0],    // merah
+        [1.0, 0.0, 0.0],    // merah
+        // [0.0, 1.0, 0.0],    // hijau
+        // [0.0, 0.0, 1.0],    // biru
+        // [1.0, 1.0, 1.0],    // putih
+        // [1.0, 0.5, 0.0],    // oranye
+        // [1.0, 1.0, 0.0],    // kuning
+        []
+    ];
+
+    const cubeNormals = [
+        [],
+        [0.0, 0.0, 1.0],    // depan
+        [1.0, 0.0, 0.0],    // kanan
+        [0.0, 1.0, 0.0],    // atas
+        [-1.0, 0.0, 0.0],   // kiri
+        [0.0, 0.0, -1.0],   // belakang
+        [0.0, -1.0, 0.0],   // bawah
         []
     ];
     
     function quad(a, b, c, d) {
-        var indices = [a, b, c, c, d, a];
-        for (var i=0; i<indices.length; i++) {
-        var point = cubePoints[indices[i]];  // [x, y, z]
-        for (var j=0; j<point.length; j++) {
-            vertices.push(point[j]);
-        }
-        var color = cubeColors[a]; // [r, g, b]
-        for (var j=0; j<color.length; j++) {
-            vertices.push(color[j]);
-        }
+        const indices = [a, b, c, c, d, a];
+        for (let i=0; i<indices.length; i++) {
+            const point = cubePoints[indices[i]];  // [x, y, z]
+            for (let j=0; j<point.length; j++) {
+                vertices.push(point[j]);
+            }
+            const color = cubeColors[a]; // [r, g, b]
+            for (let j=0; j<color.length; j++) {
+                vertices.push(color[j]);
+            }
+            const normal = cubeNormals[a];
+            for (let j=0; j<normal.length; j++) {
+                vertices.push(normal[j]);
+            }            
         }
     }
+    quad(1, 2, 3, 0); // DEPAN, merah
     quad(2, 6, 7, 3); // KANAN, hijau
     quad(3, 7, 4, 0); // ATAS, biru
     quad(4, 5, 1, 0); // KIRI, putih
     quad(5, 4, 7, 6); // BELAKANG, oranye
     quad(6, 2, 1, 5); // BAWAH, kuning
-    quad(1, 2, 3, 0); // DEPAN, merah
 
     const vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -90,10 +110,13 @@ const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer], canva
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     const aPositionLoc = gl.getAttribLocation(shaderProgram, "a_position");
-    gl.vertexAttribPointer(aPositionLoc, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+    gl.vertexAttribPointer(aPositionLoc, 3, gl.FLOAT, false, 9 * Float32Array.BYTES_PER_ELEMENT, 0);
 
     const aColorLoc = gl.getAttribLocation(shaderProgram, "a_color");
-    gl.vertexAttribPointer(aColorLoc, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
+    gl.vertexAttribPointer(aColorLoc, 3, gl.FLOAT, false, 9 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+
+    const aNormalLoc = gl.getAttribLocation(shaderProgram, "a_normal");
+    gl.vertexAttribPointer(aNormalLoc, 3, gl.FLOAT, false, 9 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
 
     gl.enableVertexAttribArray(aPositionLoc);
     gl.enableVertexAttribArray(aColorLoc);
@@ -135,13 +158,21 @@ const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer], canva
     }
     document.addEventListener('keydown', onKeyDown);
     
-    var uAmbientColor = gl.getUniformLocation(shaderProgram, 'u_ambientColor');
-    gl.uniform3fv(uAmbientColor, [0.6, 0.6, 0.9]);
+    const uNormalModel = gl.getUniformLocation(shaderProgram, 'u_normalModel');
+    const uAmbientColor = gl.getUniformLocation(shaderProgram, 'u_ambientColor');
+    gl.uniform3fv(uAmbientColor, [0.5, 0.5, 0.5]);
+    const uLightColor = gl.getUniformLocation(shaderProgram, 'u_lightColor');
+    gl.uniform3fv(uLightColor, [1, 1, 1]);
+    const uLightPosition = gl.getUniformLocation(shaderProgram, 'u_lightPosition');
+    gl.uniform3fv(uLightPosition, [2, -3, 3]);
 
     const render = () => {
         glMatrix.mat4.rotate(model, model, angularSpeed, [1.0, 1.0, 1.0]);
         gl.uniformMatrix4fv(modelLoc, false, model);
         gl.uniformMatrix4fv(viewLoc, false, view);
+        const normalModel = glMatrix.mat3.create();
+        glMatrix.mat3.normalFromMat4(normalModel, model);
+        gl.uniformMatrix3fv(uNormalModel, false, normalModel);
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT| gl.DEPTH_BUFFER_BIT);
         gl.drawArrays(primitive, offset, nVertex);
