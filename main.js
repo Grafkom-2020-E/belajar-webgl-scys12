@@ -134,6 +134,10 @@ const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer], canva
         } // S = 83
     }
     document.addEventListener('keydown', onKeyDown);
+    
+    var uAmbientColor = gl.getUniformLocation(shaderProgram, 'u_ambientColor');
+    gl.uniform3fv(uAmbientColor, [0.6, 0.6, 0.9]);
+
     const render = () => {
         glMatrix.mat4.rotate(model, model, angularSpeed, [1.0, 1.0, 1.0]);
         gl.uniformMatrix4fv(modelLoc, false, model);
