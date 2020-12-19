@@ -72,20 +72,7 @@ const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer], canva
     const nVertex = 6;
 
     let freeze = false;
-    const mouseClicked = (e) => {
-        freeze = !freeze;
-    }
-    
-    const onKeyDown = (e) => {
-        freeze = true;    
-    }
-    
-    const onKeyUp = (e) => {
-        freeze = false;    
-    }
-    document.addEventListener('click', mouseClicked);
-    document.addEventListener('keyup', onKeyUp);
-    document.addEventListener('keydown', onKeyDown);
+    const speed = 0.01;
 
     const modelLoc = gl.getUniformLocation(shaderProgram, 'u_model');
     const viewLoc = gl.getUniformLocation(shaderProgram, 'u_view');
@@ -96,6 +83,24 @@ const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer], canva
     const projection = glMatrix.mat4.create();
     gl.uniformMatrix4fv(projectionLoc, false, projection);
 
+    const onKeyDown = (event) => {
+        if (event.keyCode == 65) {
+            glMatrix.mat4.translate(model, model, [-speed, 0.0, 0.0]);
+        } // A = 65
+        else if (event.keyCode == 68) {
+            glMatrix.mat4.translate(model, model, [speed, 0.0, 0.0]);
+        } // D = 68
+        if (event.keyCode == 87) {
+            glMatrix.mat4.translate(model, model, [0.0, speed, 0.0]);
+        } // W = 87
+        if (event.keyCode == 83) {
+            glMatrix.mat4.translate(model, model, [0.0, -speed, 0.0]);
+        } // S = 83
+    }
+
+    document.addEventListener('keydown', onKeyDown);
+
+
     const render = () => {
         gl.uniformMatrix4fv(modelLoc, false, model);
         gl.uniformMatrix4fv(viewLoc, false, view);
@@ -104,8 +109,5 @@ const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer], canva
         gl.drawArrays(primitive, offset, nVertex);
         requestAnimationFrame(render);
     }
-
     requestAnimationFrame(render);
-    d[0] = 0.0;
-    d[1] = 0.0;
 }
