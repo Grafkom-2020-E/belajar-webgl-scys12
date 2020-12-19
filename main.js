@@ -72,7 +72,8 @@ const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer], canva
     const nVertex = 6;
 
     let freeze = false;
-    const speed = 0.01;
+    const linearSpeed = 0.01;
+    const angularSpeed = glMatrix.glMatrix.toRadian(1);
 
     const modelLoc = gl.getUniformLocation(shaderProgram, 'u_model');
     const viewLoc = gl.getUniformLocation(shaderProgram, 'u_view');
@@ -85,23 +86,21 @@ const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer], canva
 
     const onKeyDown = (event) => {
         if (event.keyCode == 65) {
-            glMatrix.mat4.translate(model, model, [-speed, 0.0, 0.0]);
+            glMatrix.mat4.translate(model, model, [-linearSpeed, 0.0, 0.0]);
         } // A = 65
         else if (event.keyCode == 68) {
-            glMatrix.mat4.translate(model, model, [speed, 0.0, 0.0]);
+            glMatrix.mat4.translate(model, model, [linearSpeed, 0.0, 0.0]);
         } // D = 68
         if (event.keyCode == 87) {
-            glMatrix.mat4.translate(model, model, [0.0, speed, 0.0]);
+            glMatrix.mat4.translate(model, model, [0.0, linearSpeed, 0.0]);
         } // W = 87
         if (event.keyCode == 83) {
-            glMatrix.mat4.translate(model, model, [0.0, -speed, 0.0]);
+            glMatrix.mat4.translate(model, model, [0.0, -linearSpeed, 0.0]);
         } // S = 83
     }
-
     document.addEventListener('keydown', onKeyDown);
-
-
     const render = () => {
+        glMatrix.mat4.rotate(model, model, angularSpeed, [1.0, 1.0, 1.0]);
         gl.uniformMatrix4fv(modelLoc, false, model);
         gl.uniformMatrix4fv(viewLoc, false, view);
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
