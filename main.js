@@ -71,8 +71,6 @@ const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer], canva
     const offset = 0;
     const nVertex = 6;
 
-    const uD = gl.getUniformLocation(shaderProgram, "u_d");
-    const d = [0.5, 0.5];
     let freeze = false;
     const mouseClicked = (e) => {
         freeze = !freeze;
@@ -88,14 +86,19 @@ const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer], canva
     document.addEventListener('click', mouseClicked);
     document.addEventListener('keyup', onKeyUp);
     document.addEventListener('keydown', onKeyDown);
-    const render = () => {
-        if (freeze) {
 
-        } else {
-            d[0] -= 0.001;
-            d[1] -= 0.001;
-        }
-        gl.uniform2fv(uD, d);
+    const modelLoc = gl.getUniformLocation(shaderProgram, 'u_model');
+    const viewLoc = gl.getUniformLocation(shaderProgram, 'u_view');
+    const projectionLoc = gl.getUniformLocation(shaderProgram, 'u_projection');
+
+    const model = glMatrix.mat4.create();
+    const view = glMatrix.mat4.create();
+    const projection = glMatrix.mat4.create();
+    gl.uniformMatrix4fv(projectionLoc, false, projection);
+
+    const render = () => {
+        gl.uniformMatrix4fv(modelLoc, false, model);
+        gl.uniformMatrix4fv(viewLoc, false, view);
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
         gl.drawArrays(primitive, offset, nVertex);
