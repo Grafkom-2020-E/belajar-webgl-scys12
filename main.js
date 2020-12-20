@@ -41,7 +41,7 @@ const main = () => {
         []
     ];
     
-    function quad(a, b, c, d) {
+    const quad = (a, b, c, d) => {
         const indices = [a, b, c, c, d, a];
         for (let i=0; i<indices.length; i++) {
             const point = cubePoints[indices[i]];  // [x, y, z]
@@ -120,6 +120,7 @@ const startDrawingUsingShaderProgram = (gl, [shaderProgram, vertexBuffer], canva
 
     gl.enableVertexAttribArray(aPositionLoc);
     gl.enableVertexAttribArray(aColorLoc);
+    gl.enableVertexAttribArray(aNormalLoc);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
     
     gl.viewport(100, 0, canvas.height, canvas.height);
